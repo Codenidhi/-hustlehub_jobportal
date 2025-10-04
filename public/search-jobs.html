@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hustle Hub - Search Jobs</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Poppins', Arial, sans-serif;
+      color: #000;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .content-wrapper {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      padding: 20px 0;
+      background-color: rgba(93, 89, 89, 0.62);
+      backdrop-filter: blur(10px);
+    }
+
+    .header .content-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: none;
+      list-style: none;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      font-weight: 500;
+      font-size: 16px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .icon-button {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    main {
+      padding-top: 100px;
+      padding-bottom: 80px;
+      min-height: calc(100vh - 200px);
+    }
+
+    .job-search-container {
+      background: #fff;
+      padding: 40px 20px;
+      margin-bottom: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .job-search-form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .job-search-form input,
+    .job-search-form select {
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .search-btn {
+      padding: 12px 24px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.3s;
+    }
+
+    .search-btn:hover {
+      background: #333;
+    }
+
+    .job-results {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .job-results h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    #job-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 640px) {
+      #job-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      #job-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+      }
+    }
+
+    .job-card {
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 350px;
+    }
+
+    .job-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .job-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      gap: 16px;
+    }
+
+    .job-card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .job-card p {
+      margin: 8px 0;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .job-card strong {
+      color: #000;
+      font-weight: 600;
+    }
+
+    .job-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .job-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #f0f0f0;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    .job-tag i {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .apply-btn {
+      margin-top: auto;
+      padding: 10px 24px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .apply-btn:hover {
+      background: #333;
+      transform: translateY(-1px);
+    }
+
+    .apply-btn:active {
+      transform: translateY(0);
+    }
+
+    .no-jobs {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 16px;
+      grid-column: 1 / -1;
+    }
+
+    .job-description {
+      flex-grow: 1;
+      margin-bottom: 16px;
+    }
+
+    .job-description p {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.6;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .post-job-link {
+      margin-bottom: 24px;
+      text-align: right;
+    }
+
+    .post-job-link a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: #000;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .post-job-link a:hover {
+      background: #333;
+    }
+
+    .footer {
+      width: 100%;
+      padding: 40px 0;
+      background-color: rgba(30, 30, 30, 0.5);
+      margin-top: auto;
+    }
+
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .footer-main {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .footer-brand,
+    .footer-social-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      line-height: 1.5;
+      color: #fff;
+    }
+
+    .footer-brand {
+      font-size: 30px;
+    }
+
+    .footer-social {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-social-title {
+      font-size: 26px;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .social-icon {
+      font-size: 45px;
+      color: #fff;
+      transition: transform 0.3s;
+    }
+
+    .social-icon:hover {
+      transform: scale(1.1);
+    }
+
+    .footer-line {
+      width: 100%;
+      height: 3px;
+      background-color: #fff;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+      animation: slideDown 0.3s;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #aaa;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .modal-close:hover {
+      color: #000;
+    }
+
+    .modal h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .modal-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-form label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #444;
+      margin-bottom: 6px;
+    }
+
+    .modal-form input,
+    .modal-form select,
+    .modal-form textarea {
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+    }
+
+    .modal-form input[type="file"] {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .modal-form select {
+      cursor: pointer;
+      background-color: #fff;
+    }
+
+    .modal-form textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .modal-submit {
+      padding: 12px 24px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .modal-submit:hover {
+      background: #333;
+    }
+
+    @media (min-width: 640px) {
+      .nav-links {
+        display: flex;
+      }
+      .job-search-form {
+        grid-template-columns: 2fr 2fr 1fr 1fr;
+      }
+      .footer-main {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<header class="header">
+  <div class="content-wrapper">
+    <a href="index.html" class="logo">HUSTLE HUB</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="post-job.html">Post Job</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+    <div class="header-icons">
+      <button class="icon-button"><i class="fas fa-bell"></i></button>
+      <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="job-search-container content-wrapper">
+    <form class="job-search-form" id="search-form">
+      <input type="text" id="search-title" placeholder="Job title, skills, or company" />
+      <input type="text" id="search-location" placeholder="Location" />
+      <select id="search-type">
+        <option value="">All Types</option>
+        <option value="Full Time">Full-Time</option>
+        <option value="Part Time">Part-Time</option>
+        <option value="Internship">Internship</option>
+        <option value="Contract">Contract</option>
+      </select>
+      <button type="submit" class="search-btn"><i class="fas fa-search"></i> Search</button>
+    </form>
+  </section>
+
+  <section class="job-results content-wrapper">
+    <h2>Available Jobs</h2>
+    <div id="job-list"></div>
+  </section>
+</main>
+
+<!-- Application Modal -->
+<div id="application-modal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h2>Apply for Job</h2>
+    <form class="modal-form" id="application-form">
+      <div>
+        <label for="applicant-name">Full Name *</label>
+        <input type="text" id="applicant-name" required>
+      </div>
+      <div>
+        <label for="applicant-email">Email *</label>
+        <input type="email" id="applicant-email" required>
+      </div>
+      <div>
+        <label for="applicant-phone">Phone Number *</label>
+        <input type="tel" id="applicant-phone" required>
+      </div>
+      <div>
+        <label for="applicant-location">Current Location *</label>
+        <input type="text" id="applicant-location" placeholder="e.g. Bangalore, India" required>
+      </div>
+      <div>
+        <label for="applicant-qualification">Highest Qualification *</label>
+        <select id="applicant-qualification" required>
+          <option value="">Select Qualification</option>
+          <option value="High School">High School</option>
+          <option value="Diploma">Diploma</option>
+          <option value="Bachelor's Degree">Bachelor's Degree</option>
+          <option value="Master's Degree">Master's Degree</option>
+          <option value="PhD">PhD</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="applicant-resume">Resume/CV *</label>
+        <input type="file" id="applicant-resume" accept=".pdf,.doc,.docx" required>
+      </div>
+      <div>
+        <label for="interview-preference">Preferred Interview Mode *</label>
+        <select id="interview-preference" required>
+          <option value="">Select Preference</option>
+          <option value="Zoom">Online - Zoom</option>
+          <option value="Google Meet">Online - Google Meet</option>
+          <option value="In Person">In Person</option>
+        </select>
+      </div>
+      <div>
+        <label for="applicant-message">Cover Letter</label>
+        <textarea id="applicant-message" placeholder="Tell us why you're a great fit for this role..."></textarea>
+      </div>
+      <button type="submit" class="modal-submit">Submit Application</button>
+    </form>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-content content-wrapper">
+    <div class="footer-main">
+      <div class="footer-brand">HUSTLE HUB</div>
+      <div class="footer-social">
+        <h3 class="footer-social-title">Follow us on social media</h3>
+        <div class="social-icons">
+          <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-line"></div>
+  </div>
+</footer>
+
+<script>
+  const jobList = document.getElementById('job-list');
+  const searchForm = document.getElementById('search-form');
+  const modal = document.getElementById('application-modal');
+  const modalClose = document.querySelector('.modal-close');
+  const applicationForm = document.getElementById('application-form');
+  let allJobs = [];
+  let currentJobId = null;
+
+  // Load all jobs from server
+  async function loadJobs() {
+    jobList.innerHTML = '<p class="no-jobs">Loading jobs...</p>';
+    
+    try {
+      const response = await fetch('http://localhost:3000/jobs');
+      
+      if (!response.ok) {
+        throw new Error('Server error');
+      }
+      
+      allJobs = await response.json();
+      displayJobs(allJobs);
+    } catch (error) {
+      console.error('Error loading jobs:', error);
+      jobList.innerHTML = `
+        <p class="no-jobs">
+          Unable to load jobs. Make sure the server is running on http://localhost:3000
+          <br><br>
+          <a href="post-job.html" style="color: #007bff; text-decoration: underline;">Post your first job</a>
+        </p>
+      `;
+    }
+  }
+
+  // Display jobs
+  function displayJobs(jobs) {
+    jobList.innerHTML = '';
+
+    if (jobs.length === 0) {
+      jobList.innerHTML = `
+        <p class="no-jobs">
+          No jobs found.
+          <br><br>
+          <a href="post-job.html" style="color: #007bff; text-decoration: underline;">Be the first to post a job!</a>
+        </p>
+      `;
+      return;
+    }
+
+    jobs.forEach(job => {
+      const jobCard = document.createElement('div');
+      jobCard.classList.add('job-card');
+      jobCard.innerHTML = `
+        <div class="job-card-header">
+          <div>
+            <h3>${job.title}</h3>
+            <p style="font-size: 15px; color: #666; font-weight: 500; margin-bottom: 4px;">${job.company}</p>
+          </div>
+        </div>
+        
+        <div class="job-meta">
+          <span class="job-tag">
+            <i class="fas fa-map-marker-alt"></i>
+            ${job.location}
+          </span>
+          <span class="job-tag">
+            <i class="fas fa-clock"></i>
+            ${job.type}
+          </span>
+          <span class="job-tag">
+            <i class="fas fa-rupee-sign"></i>
+            ${job.salary}
+          </span>
+        </div>
+
+        <div class="job-description">
+          ${job.description ? `<p>${job.description}</p>` : '<p style="color: #999;">No description provided</p>'}
+        </div>
+        
+        <button class="apply-btn" data-job-id="${job.id}" data-job-title="${job.title}" data-company="${job.company}">
+          Apply Now
+        </button>
+      `;
+      jobList.appendChild(jobCard);
+    });
+
+    // Add event listeners to all apply buttons
+    document.querySelectorAll('.apply-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        currentJobId = this.dataset.jobId;
+        const jobTitle = this.dataset.jobTitle;
+        const company = this.dataset.company;
+        openModal(jobTitle, company);
+      });
+    });
+  }
+
+  // Open application modal
+  function openModal(jobTitle, company) {
+    modal.style.display = 'block';
+    document.querySelector('.modal h2').textContent = `Apply for ${jobTitle} at ${company}`;
+  }
+
+  // Close modal
+  modalClose.addEventListener('click', () => {
+    modal.style.display = 'none';
+    applicationForm.reset();
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+      applicationForm.reset();
+    }
+  });
+
+  // Handle application submission
+  applicationForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const resumeFile = document.getElementById('applicant-resume').files[0];
+    
+    const applicationData = {
+      jobId: currentJobId,
+      name: document.getElementById('applicant-name').value,
+      email: document.getElementById('applicant-email').value,
+      phone: document.getElementById('applicant-phone').value,
+      location: document.getElementById('applicant-location').value,
+      qualification: document.getElementById('applicant-qualification').value,
+      resumeFileName: resumeFile ? resumeFile.name : 'No file uploaded',
+      interviewPreference: document.getElementById('interview-preference').value,
+      message: document.getElementById('applicant-message').value
+    };
+
+    console.log('Application submitted:', applicationData);
+    
+    // Here you would normally send this to your server including the resume file
+    alert(`Application submitted successfully!\n\nDetails:\nName: ${applicationData.name}\nLocation: ${applicationData.location}\nQualification: ${applicationData.qualification}\nResume: ${applicationData.resumeFileName}\nInterview: ${applicationData.interviewPreference}\n\nWe'll review your application and get back to you soon.`);
+    
+    modal.style.display = 'none';
+    applicationForm.reset();
+  });
+
+  // Search functionality
+  searchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const titleSearch = document.getElementById('search-title').value.toLowerCase();
+    const locationSearch = document.getElementById('search-location').value.toLowerCase();
+    const typeSearch = document.getElementById('search-type').value;
+
+    const filteredJobs = allJobs.filter(job => {
+      const matchTitle = !titleSearch || 
+        job.title.toLowerCase().includes(titleSearch) || 
+        job.company.toLowerCase().includes(titleSearch);
+      
+      const matchLocation = !locationSearch || 
+        job.location.toLowerCase().includes(locationSearch);
+      
+      const matchType = !typeSearch || job.type === typeSearch;
+
+      return matchTitle && matchLocation && matchType;
+    });
+
+    displayJobs(filteredJobs);
+  });
+
+  // Load jobs on page load
+  window.addEventListener('DOMContentLoaded', loadJobs);
+</script>
+
+</body>
+</html>

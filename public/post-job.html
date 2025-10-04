@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hustle Hub — Post Job</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Poppins', Arial, sans-serif;
+      color: #000;
+      background: #f5f5f5;
+    }
+
+    .content-wrapper {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      padding: 20px 0;
+      background-color: rgba(93, 89, 89, 0.62);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      font-size: 24px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: none;
+      list-style: none;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      font-weight: 500;
+      font-size: 16px;
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #e0e0e0;
+    }
+
+    .header-icons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .icon-button {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #fff;
+      cursor: pointer;
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    .icon-button:hover,
+    .icon-button:focus {
+      color: #e0e0e0;
+      transform: scale(1.1);
+    }
+
+    main {
+      padding-top: 140px;
+      padding-bottom: 80px;
+    }
+
+    .job-form-container {
+      background: #fff; 
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+
+    .form-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #333;
+      margin-bottom: 2rem;
+    }
+
+    .job-form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .job-form {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      .job-form .full-width {
+        grid-column: 1 / -1;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      resize: vertical;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    .input-with-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-with-icon i {
+      position: absolute;
+      left: 12px;
+      color: #666;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+
+    .input-with-icon input,
+    .input-with-icon select {
+      padding-left: 36px;
+    }
+
+    .input-with-icon input:focus ~ i,
+    .input-with-icon select:focus ~ i {
+      color: #007bff;
+    }
+
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .cancel-btn,
+    .submit-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s, transform 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .cancel-btn {
+      color: #6c757d;
+      background-color: transparent;
+      border: 1px solid #ced4da;
+    }
+
+    .cancel-btn:hover,
+    .cancel-btn:focus {
+      color: #495057;
+      background-color: #e9ecef;
+      border-color: #d3d9e0;
+      transform: translateY(-1px);
+    }
+
+    .submit-btn {
+      background: #000;
+      color: #fff;
+      border: none;
+    }
+
+    .submit-btn:hover,
+    .submit-btn:focus {
+      background: #333;
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .view-jobs {
+      text-align: right;
+      margin-top: 2rem;
+      margin-bottom: 0;
+    }
+
+    .view-jobs a {
+      font-size: 15px;
+      font-weight: 600;
+      color: #000;
+      text-decoration: none;
+      transition: color 0.3s, text-decoration 0.3s;
+    }
+
+    .view-jobs a:hover,
+    .view-jobs a:focus {
+      color: #007bff;
+      text-decoration: underline;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .footer {
+      width: 100%;
+      padding: 40px 0;
+      background-color: rgba(30, 30, 30, 0.5);
+    }
+
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .footer-main {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .footer-brand,
+    .footer-social-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      line-height: 1.5;
+      color: #fff;
+      text-align: left;
+    }
+
+    .footer-brand {
+      font-size: 30px;
+    }
+
+    .footer-social {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-social-title {
+      font-size: 26px;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .social-icon {
+      font-size: 45px;
+      color: #fff;
+      transition: transform 0.3s, color 0.3s;
+    }
+
+    .social-icon:hover,
+    .social-icon:focus {
+      transform: scale(1.1);
+      color: #ddd;
+    }
+
+    .footer-line {
+      width: 100%;
+      height: 3px;
+      margin-top: 16px;
+      background-color: #fff;
+    }
+
+    @media (min-width: 640px) {
+      .content-wrapper {
+        padding: 0 24px;
+      }
+      .nav-links {
+        display: flex;
+      }
+      .footer-main {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .content-wrapper {
+        padding: 0 32px;
+      }
+      .footer {
+        padding: 38px 0;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .content-wrapper {
+        padding: 0 48px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav content-wrapper">
+      <a href="index.html" class="logo">HUSTLE HUB</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="search-jobs.html">Jobs</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="header-icons">
+        <button class="icon-button"><i class="fas fa-bell"></i></button>
+        <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="job-form-container content-wrapper">
+      <h2 class="form-title">Post Job</h2>
+      
+      <div id="alert-container"></div>
+
+      <form class="job-form" id="job-form">
+        <div class="form-group">
+          <label for="job-title">Job Title *</label>
+          <div class="input-with-icon">
+            <input type="text" id="job-title" placeholder="e.g. Senior Software Engineer" required>
+            <i class="fas fa-briefcase"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="company">Company *</label>
+          <div class="input-with-icon">
+            <input type="text" id="company" placeholder="Company Name" required>
+            <i class="fas fa-building"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location *</label>
+          <div class="input-with-icon">
+            <input type="text" id="location" placeholder="e.g. Bangalore, India" required>
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="job-type">Job Type</label>
+          <div class="input-with-icon">
+            <select id="job-type">
+              <option>Full Time</option>
+              <option>Part Time</option>
+              <option>Internship</option>
+              <option>Contract</option>
+            </select>
+            <i class="fas fa-clock"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="salary">Salary</label>
+          <div class="input-with-icon">
+            <input type="text" id="salary" placeholder="₹ 70,000–1,00,000">
+            <i class="fas fa-rupee-sign"></i>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="description">Job Description</label>
+          <textarea id="description" rows="4" placeholder="Describe the role, responsibilities, and what you're looking for..."></textarea>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="requirements">Requirements</label>
+          <textarea id="requirements" rows="3" placeholder="e.g. 5+ years of React experience, Bachelor's Degree in Computer Science, Strong problem-solving skills"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <a href="search-jobs.html" class="cancel-btn">Cancel</a>
+          <button type="submit" class="submit-btn" id="submit-btn">Post Job</button>
+        </div>
+      </form>
+
+      <div class="view-jobs">
+        <a href="posted-job.html">View All Jobs →</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content content-wrapper">
+      <div class="footer-main">
+        <div class="footer-brand">HUSTLE HUB</div>
+        <div class="footer-social">
+          <h3 class="footer-social-title">Follow us on social media</h3>
+          <div class="social-icons">
+            <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-line"></div>
+    </div>
+  </footer>
+
+  <script>
+    const jobForm = document.getElementById('job-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const alertContainer = document.getElementById('alert-container');
+
+    function showAlert(message, type = 'success') {
+      alertContainer.innerHTML = `
+        <div class="alert alert-${type}">
+          ${message}
+        </div>
+      `;
+      
+      setTimeout(() => {
+        alertContainer.innerHTML = '';
+      }, 5000);
+    }
+
+    jobForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const jobData = {
+        title: document.getElementById('job-title').value.trim(),
+        company: document.getElementById('company').value.trim(),
+        location: document.getElementById('location').value.trim(),
+        type: document.getElementById('job-type').value,
+        salary: document.getElementById('salary').value.trim() || 'Not specified',
+        description: document.getElementById('description').value.trim(),
+        requirements: document.getElementById('requirements').value.trim()
+      };
+
+      // Validation
+      if (!jobData.title || !jobData.company || !jobData.location) {
+        showAlert('Please fill in all required fields!', 'error');
+        return;
+      }
+
+      console.log('📤 Sending job data:', jobData);
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Posting...';
+
+      try {
+        const response = await fetch('http://localhost:3000/jobs', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(jobData)
+        });
+
+        console.log('📡 Response status:', response.status);
+        const data = await response.json();
+        console.log('📡 Response data:', data);
+
+        if (response.ok && data.success) {
+          showAlert('✅ Job posted successfully! Redirecting to job listings...', 'success');
+          jobForm.reset();
+          
+          // Redirect to search jobs page after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'search-jobs.html';
+          }, 2000);
+        } else {
+          throw new Error(data.message || 'Failed to post job');
+        }
+      } catch (error) {
+        console.error('❌ Error posting job:', error);
+        showAlert('❌ Error posting job: ' + error.message + '. Make sure the server is running on http://localhost:3000', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Post Job';
+      }
+    });
+  </script>
+</body>
+</html>
