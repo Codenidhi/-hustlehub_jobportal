@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "id": 1759671770433.0408,
+    "userId": 1759393778678,
+    "jobId": 1759671770429,
+    "title": "🎉 New Job Posted!",
+    "message": "full stack development at google in bangalore,india",
+    "jobTitle": "full stack development",
+    "company": "google",
+    "location": "bangalore,india",
+    "type": "Full Time",
+    "read": true,
+    "createdAt": "2025-10-05T13:42:50.433Z"
+  },
+  {
+    "id": 1759671770433.056,
+    "userId": 1759513228514,
+    "jobId": 1759671770429,
+    "title": "🎉 New Job Posted!",
+    "message": "full stack development at google in bangalore,india",
+    "jobTitle": "full stack development",
+    "company": "google",
+    "location": "bangalore,india",
+    "type": "Full Time",
+    "read": false,
+    "createdAt": "2025-10-05T13:42:50.433Z"
+  }
+]

@@ -1,1 +1,46 @@
-[]
+[
+  {
+    "id": 1759678666193,
+    "jobId": 1759671770429,
+    "name": "sreenidhi",
+    "email": "sree777@gmail.com",
+    "phone": "1234567890",
+    "location": "bangalore",
+    "qualification": "Master's Degree",
+    "resumeFileName": "Fake Resume.pdf",
+    "interviewPreference": "Zoom",
+    "message": "aDDCsd",
+    "inviteSent": true,
+    "appliedDate": "2025-10-05T15:37:46.193Z",
+    "inviteSentDate": "2025-10-05T15:44:11.039Z"
+  },
+  {
+    "id": 1759679678220,
+    "jobId": 1759433576474,
+    "name": "poorvi",
+    "email": "poorvi@gmail.com",
+    "phone": "1234567890",
+    "location": "bangalore",
+    "qualification": "Master's Degree",
+    "resumeFileName": "Fake Resume.pdf",
+    "interviewPreference": "Google Meet",
+    "message": "acad",
+    "inviteSent": true,
+    "appliedDate": "2025-10-05T15:54:38.220Z",
+    "inviteSentDate": "2025-10-05T15:55:28.584Z"
+  },
+  {
+    "id": 1759682149990,
+    "jobId": 1759433576474,
+    "name": "punyashree",
+    "email": "punya@gmail.com",
+    "phone": "1234567890",
+    "location": "mandya",
+    "qualification": "Bachelor's Degree",
+    "resumeFileName": "Fake Resume.pdf",
+    "interviewPreference": "In Person",
+    "message": "afsasfasf",
+    "inviteSent": false,
+    "appliedDate": "2025-10-05T16:35:49.990Z"
+  }
+]

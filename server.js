@@ -130,32 +130,33 @@ app.post('/jobs', (req, res) => {
     jobs.push(newJob);
     writeJSON(JOBS_FILE, jobs);
 
-    // Create notifications for all users
+    // Create notifications for all job seekers
     const users = readJSON(USERS_FILE);
     const notifications = readJSON(NOTIFICATIONS_FILE);
     
     users.forEach(user => {
-      const notification = {
-        id: Date.now() + Math.random(),
-        userId: user.id,
-        jobId: newJob.id,
-        title: '🎉 New Job Posted!',
-        message: `${title} at ${company} in ${location}`,
-        jobTitle: title,
-        company: company,
-        location: location,
-        type: type,
-        read: false,
-        createdAt: new Date().toISOString()
-      };
-      notifications.push(notification);
+      if (user.role === 'jobseeker') {
+        const notification = {
+          id: Date.now() + Math.random(),
+          userId: user.id,
+          jobId: newJob.id,
+          title: '🎉 New Job Posted!',
+          message: `${title} at ${company} in ${location}`,
+          jobTitle: title,
+          company: company,
+          location: location,
+          type: type,
+          read: false,
+          createdAt: new Date().toISOString()
+        };
+        notifications.push(notification);
+      }
     });
 
     writeJSON(NOTIFICATIONS_FILE, notifications);
 
     console.log('✅ Job added successfully:', newJob);
     console.log(`📊 Total jobs in database: ${jobs.length}`);
-    console.log(`🔔 Created ${users.length} notifications`);
     
     res.json({ success: true, message: 'Job added successfully!', job: newJob });
   } catch (error) {
@@ -297,25 +298,105 @@ app.get('/applications', (req, res) => {
   }
 });
 
-// PUT - Update application (send invitation)
+// PUT - Update application (send invitation) - WITH DETAILED DEBUGGING
 app.put('/applications/:applicationId/invite', (req, res) => {
   try {
     const applicationId = parseInt(req.params.applicationId);
+    console.log('\n🔔 === SENDING INTERVIEW INVITATION ===');
+    console.log(`Application ID: ${applicationId}`);
+    
     const applications = readJSON(APPLICATIONS_FILE);
+    const users = readJSON(USERS_FILE);
+    const jobs = readJSON(JOBS_FILE);
+    const notifications = readJSON(NOTIFICATIONS_FILE);
     
     const application = applications.find(app => app.id === applicationId);
-    if (application) {
+    
+    if (!application) {
+      console.log('❌ Application not found');
+      return res.status(404).json({ success: false, message: 'Application not found' });
+    }
+    
+    console.log(`📧 Application email: ${application.email}`);
+    console.log(`👤 Application name: ${application.name}`);
+    
+    // Find the job details
+    const job = jobs.find(j => j.id === application.jobId);
+    if (!job) {
+      console.log('❌ Job not found');
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
+    console.log(`💼 Job: ${job.title} at ${job.company}`);
+    
+    // Find the user by email - CASE INSENSITIVE SEARCH
+    console.log(`\n🔍 Searching for user with email: ${application.email}`);
+    console.log(`Total users in database: ${users.length}`);
+    users.forEach((u, index) => {
+      console.log(`  User ${index + 1}: ${u.email} (ID: ${u.id}, Role: ${u.role})`);
+    });
+    
+    const user = users.find(u => u.email.toLowerCase() === application.email.toLowerCase());
+    
+    if (!user) {
+      console.log(`❌ No user found with email: ${application.email}`);
+      console.log(`⚠️  WARNING: Cannot send notification - user account not found!`);
+      console.log(`   Please ensure the applicant has registered with email: ${application.email}`);
+      
+      // Still mark invitation as sent even if user not found
       application.inviteSent = true;
       application.inviteSentDate = new Date().toISOString();
       writeJSON(APPLICATIONS_FILE, applications);
-      console.log('✅ Invitation sent for application:', applicationId);
-      res.json({ success: true, message: 'Invitation sent successfully' });
-    } else {
-      res.status(404).json({ success: false, message: 'Application not found' });
+      
+      return res.json({ 
+        success: true, 
+        message: 'Invitation marked as sent, but user account not found for notification',
+        warning: `No user registered with email ${application.email}`
+      });
     }
+    
+    console.log(`✅ User found: ${user.name} (ID: ${user.id}, Role: ${user.role})`);
+    
+    // Create notification for the applicant
+    const notification = {
+      id: Date.now() + Math.random(),
+      userId: user.id,
+      jobId: job.id,
+      applicationId: application.id,
+      title: '🎊 Interview Invitation!',
+      message: `You've been invited for an interview for ${job.title} at ${job.company}. Interview mode: ${application.interviewPreference}`,
+      jobTitle: job.title,
+      company: job.company,
+      location: job.location,
+      type: 'Interview Invitation',
+      read: false,
+      createdAt: new Date().toISOString()
+    };
+    
+    notifications.push(notification);
+    writeJSON(NOTIFICATIONS_FILE, notifications);
+    
+    console.log(`🔔 Notification created successfully!`);
+    console.log(`   Notification ID: ${notification.id}`);
+    console.log(`   For User ID: ${user.id}`);
+    console.log(`   Total notifications: ${notifications.length}`);
+    
+    // Mark invitation as sent
+    application.inviteSent = true;
+    application.inviteSentDate = new Date().toISOString();
+    writeJSON(APPLICATIONS_FILE, applications);
+    
+    console.log('✅ Invitation sent successfully!');
+    console.log('=== END INVITATION PROCESS ===\n');
+    
+    res.json({ 
+      success: true, 
+      message: 'Invitation sent successfully',
+      notificationCreated: true,
+      userNotified: user.name
+    });
   } catch (error) {
-    console.error('Error sending invitation:', error);
-    res.status(500).json({ success: false, message: 'Error sending invitation' });
+    console.error('❌ Error sending invitation:', error);
+    res.status(500).json({ success: false, message: 'Error sending invitation: ' + error.message });
   }
 });
 
@@ -416,5 +497,5 @@ app.listen(PORT, () => {
   console.log(`📁 Jobs file: ${JOBS_FILE}`);
   console.log(`📁 Notifications file: ${NOTIFICATIONS_FILE}`);
   console.log(`📁 Applications file: ${APPLICATIONS_FILE}`);
-  console.log(`\n🚀 Ready to accept applications!`);
+  console.log(`\n🚀 Ready to accept applications and send interview invitations!`);
 });

@@ -303,6 +303,35 @@
       background: #333;
     }
 
+    .back-to-home {
+      text-align: center;
+      padding: 40px 20px;
+      margin-top: 40px;
+    }
+
+    .back-to-home a {
+      color: #000;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.3s;
+    }
+
+    .back-to-home a:hover {
+      color: #555;
+    }
+
+    .back-to-home a i {
+      transition: transform 0.3s;
+    }
+
+    .back-to-home a:hover i {
+      transform: translateX(-4px);
+    }
+
     .footer {
       width: 100%;
       padding: 40px 0;
@@ -485,6 +514,11 @@
       background: #333;
     }
 
+    .modal-submit:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
     @media (min-width: 640px) {
       .nav-links {
         display: flex;
@@ -536,6 +570,13 @@
     <h2>Available Jobs</h2>
     <div id="job-list"></div>
   </section>
+
+  <div class="back-to-home content-wrapper">
+    <a href="index.html">
+      <i class="fas fa-arrow-left"></i>
+      Go back to Home
+    </a>
+  </div>
 </main>
 
 <!-- Application Modal -->
@@ -729,8 +770,12 @@
   });
 
   // Handle application submission
-  applicationForm.addEventListener('submit', (e) => {
+  applicationForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('.modal-submit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
     
     const resumeFile = document.getElementById('applicant-resume').files[0];
     
@@ -746,13 +791,33 @@
       message: document.getElementById('applicant-message').value
     };
 
-    console.log('Application submitted:', applicationData);
+    console.log('Submitting application:', applicationData);
     
-    // Here you would normally send this to your server including the resume file
-    alert(`Application submitted successfully!\n\nDetails:\nName: ${applicationData.name}\nLocation: ${applicationData.location}\nQualification: ${applicationData.qualification}\nResume: ${applicationData.resumeFileName}\nInterview: ${applicationData.interviewPreference}\n\nWe'll review your application and get back to you soon.`);
-    
-    modal.style.display = 'none';
-    applicationForm.reset();
+    try {
+      const response = await fetch('http://localhost:3000/applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(applicationData)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`Application submitted successfully!\n\nDetails:\nName: ${applicationData.name}\nLocation: ${applicationData.location}\nQualification: ${applicationData.qualification}\nResume: ${applicationData.resumeFileName}\nInterview: ${applicationData.interviewPreference}\n\nWe'll review your application and get back to you soon.`);
+        modal.style.display = 'none';
+        applicationForm.reset();
+      } else {
+        alert('Failed to submit application: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      alert('Error submitting application. Please make sure the server is running and try again.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Application';
+    }
   });
 
   // Search functionality

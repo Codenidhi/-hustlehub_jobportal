@@ -410,29 +410,20 @@
 </footer>
 
 <script>
-  const mockApplicants = {};
+  const jobApplicants = {};
 
-  function generateMockApplicants(jobId) {
-    const names = ['Riya Mehra', 'Arjun Reddy', 'Neha Kapoor', 'Alia Bhatt'];
-    const emails = ['riya@gmail.com', 'arjun@gmail.com', 'neha@gmail.com', 'alia@gmail.com'];
-    const locations = ['Bangalore, India', 'Mumbai, India', 'Delhi, India', 'Pune, India'];
-    const qualifications = ["Bachelor's Degree", "Master's Degree", "Bachelor's Degree", "Master's Degree"];
-    
-    const numApplicants = Math.floor(Math.random() * 5);
-    const applicants = [];
-    
-    for (let i = 0; i < numApplicants; i++) {
-      applicants.push({
-        id: Date.now() + i,
-        name: names[i % names.length],
-        email: emails[i % emails.length],
-        location: locations[i % locations.length],
-        qualification: qualifications[i % qualifications.length],
-        inviteSent: false
-      });
+  async function fetchApplicantsForJob(jobId) {
+    try {
+      const response = await fetch(`http://localhost:3000/applications/job/${jobId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch applications');
+      }
+      const applications = await response.json();
+      return applications;
+    } catch (error) {
+      console.error('Error fetching applicants:', error);
+      return [];
     }
-    
-    return applicants;
   }
 
   async function loadJobs() {
@@ -463,6 +454,11 @@
         return;
       }
       
+      // Fetch real applicants for each job
+      for (const job of jobs) {
+        jobApplicants[job.id] = await fetchApplicantsForJob(job.id);
+      }
+      
       displayJobs(jobs);
     } catch (error) {
       console.error('Error loading jobs:', error);
@@ -481,11 +477,7 @@
     container.innerHTML = '';
     
     jobs.forEach(job => {
-      if (!mockApplicants[job.id]) {
-        mockApplicants[job.id] = generateMockApplicants(job.id);
-      }
-      
-      const applicants = mockApplicants[job.id];
+      const applicants = jobApplicants[job.id] || [];
       
       const jobCard = document.createElement('div');
       jobCard.className = 'job-card';
@@ -534,14 +526,14 @@
                         <td>${applicant.location}</td>
                         <td>${applicant.qualification}</td>
                         <td>
-                          <button class="action-btn view-pdf-btn" onclick="viewPDF('${applicant.name}')">
+                          <button class="action-btn view-pdf-btn" onclick="viewPDF('${applicant.name}', '${applicant.resumeFileName}')">
                             <i class="fas fa-file-pdf"></i> View PDF
                           </button>
-                          <button class="action-btn view-profile-btn" onclick="viewProfile('${applicant.name}')">
+                          <button class="action-btn view-profile-btn" onclick="viewProfile(${applicant.id})">
                             <i class="fas fa-user"></i> View Profile
                           </button>
                           <button class="action-btn send-invite-btn ${applicant.inviteSent ? 'sent' : ''}" 
-                                  onclick="sendInvite(${job.id}, ${applicant.id})"
+                                  onclick="sendInvite(${applicant.id})"
                                   ${applicant.inviteSent ? 'disabled' : ''}>
                             <i class="fas fa-envelope"></i> 
                             ${applicant.inviteSent ? 'Invitation Sent' : 'Send Invitation'}
@@ -580,7 +572,7 @@
       
       if (data.success) {
         alert('Job deleted successfully!');
-        delete mockApplicants[jobId];
+        delete jobApplicants[jobId];
         loadJobs();
       } else {
         alert('Failed to delete job: ' + data.message);
@@ -591,21 +583,71 @@
     }
   }
 
-  function viewPDF(applicantName) {
-    alert(`Opening resume for ${applicantName}...\n\nIn a real application, this would open the PDF file.`);
+  function viewPDF(applicantName, resumeFileName) {
+    alert(`Opening resume for ${applicantName}...\n\nFile: ${resumeFileName}\n\nIn a real application, this would open the PDF file.`);
   }
 
-  function viewProfile(applicantName) {
-    alert(`Opening profile for ${applicantName}...\n\nIn a real application, this would show detailed applicant profile.`);
-  }
-
-  function sendInvite(jobId, applicantId) {
-    const applicant = mockApplicants[jobId].find(a => a.id === applicantId);
+  function viewProfile(applicationId) {
+    // Find the applicant details
+    let applicant = null;
+    for (const jobId in jobApplicants) {
+      const found = jobApplicants[jobId].find(app => app.id === applicationId);
+      if (found) {
+        applicant = found;
+        break;
+      }
+    }
     
-    if (applicant && !applicant.inviteSent) {
-      applicant.inviteSent = true;
-      alert(`Interview invitation sent to ${applicant.name}!\n\nEmail: ${applicant.email}\n\nThey will receive an email with interview details.`);
-      loadJobs();
+    if (applicant) {
+      const profileDetails = `
+Name: ${applicant.name}
+Email: ${applicant.email}
+Phone: ${applicant.phone}
+Location: ${applicant.location}
+Qualification: ${applicant.qualification}
+Resume: ${applicant.resumeFileName}
+Interview Preference: ${applicant.interviewPreference}
+Applied: ${new Date(applicant.appliedDate).toLocaleDateString()}
+
+Cover Letter:
+${applicant.message || 'No cover letter provided'}
+      `;
+      alert(`Full Profile:\n\n${profileDetails}`);
+    }
+  }
+
+  async function sendInvite(applicationId) {
+    try {
+      const response = await fetch(`http://localhost:3000/applications/${applicationId}/invite`, {
+        method: 'PUT'
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Find the applicant to show their details
+        let applicant = null;
+        for (const jobId in jobApplicants) {
+          const found = jobApplicants[jobId].find(app => app.id === applicationId);
+          if (found) {
+            applicant = found;
+            break;
+          }
+        }
+        
+        if (applicant) {
+          alert(`Interview invitation sent to ${applicant.name}!\n\nEmail: ${applicant.email}\n\nThey will receive an email with interview details.`);
+        } else {
+          alert('Interview invitation sent successfully!');
+        }
+        
+        loadJobs();
+      } else {
+        alert('Failed to send invitation: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error sending invitation:', error);
+      alert('Error sending invitation. Please try again.');
     }
   }
 

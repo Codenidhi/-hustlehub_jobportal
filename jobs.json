@@ -9,5 +9,16 @@
     "description": "good in clean code",
     "requirements": "0 to 3 years",
     "postedDate": "2025-10-02T19:32:56.474Z"
+  },
+  {
+    "id": 1759671770429,
+    "title": "full stack development",
+    "company": "google",
+    "location": "bangalore,india",
+    "type": "Full Time",
+    "salary": "50000-60000",
+    "description": "basic of html css and js",
+    "requirements": "3 to  5 years",
+    "postedDate": "2025-10-05T13:42:50.429Z"
   }
 ]
