@@ -12,5 +12,12 @@
     "email": "nidhishri767@gmail.com",
     "password": "sreenidhi",
     "role": "recruiter"
+  },
+  {
+    "id": 1759683918086,
+    "name": "swapna",
+    "email": "swapna@gmail.com",
+    "password": "swapna",
+    "role": "jobseeker"
   }
 ]
