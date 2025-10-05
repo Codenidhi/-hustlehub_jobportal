@@ -489,13 +489,5 @@ app.delete('/notifications/:userId', (req, res) => {
   }
 });
 
-// ---------------- START ---------------- //
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-  console.log(`📁 Users file: ${USERS_FILE}`);
-  console.log(`📁 Jobs file: ${JOBS_FILE}`);
-  console.log(`📁 Notifications file: ${NOTIFICATIONS_FILE}`);
-  console.log(`📁 Applications file: ${APPLICATIONS_FILE}`);
-  console.log(`\n🚀 Ready to accept applications and send interview invitations!`);
-});
+// Export for Vercel (serverless)
+module.exports = app;
