@@ -16,25 +16,29 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// File paths
-const USERS_FILE = path.join(__dirname, 'users.json');
-const JOBS_FILE = path.join(__dirname, 'jobs.json');
-const NOTIFICATIONS_FILE = path.join(__dirname, 'notifications.json');
-const APPLICATIONS_FILE = path.join(__dirname, 'applications.json');
+// File paths - Vercel uses /tmp for writable storage
+const USERS_FILE = path.join('/tmp', 'users.json');
+const JOBS_FILE = path.join('/tmp', 'jobs.json');
+const NOTIFICATIONS_FILE = path.join('/tmp', 'notifications.json');
+const APPLICATIONS_FILE = path.join('/tmp', 'applications.json');
 
 // Initialize files if they don't exist
-if (!fs.existsSync(USERS_FILE)) {
-  fs.writeFileSync(USERS_FILE, '[]');
+function initializeFiles() {
+  if (!fs.existsSync(USERS_FILE)) {
+    fs.writeFileSync(USERS_FILE, '[]');
+  }
+  if (!fs.existsSync(JOBS_FILE)) {
+    fs.writeFileSync(JOBS_FILE, '[]');
+  }
+  if (!fs.existsSync(NOTIFICATIONS_FILE)) {
+    fs.writeFileSync(NOTIFICATIONS_FILE, '[]');
+  }
+  if (!fs.existsSync(APPLICATIONS_FILE)) {
+    fs.writeFileSync(APPLICATIONS_FILE, '[]');
+  }
 }
-if (!fs.existsSync(JOBS_FILE)) {
-  fs.writeFileSync(JOBS_FILE, '[]');
-}
-if (!fs.existsSync(NOTIFICATIONS_FILE)) {
-  fs.writeFileSync(NOTIFICATIONS_FILE, '[]');
-}
-if (!fs.existsSync(APPLICATIONS_FILE)) {
-  fs.writeFileSync(APPLICATIONS_FILE, '[]');
-}
+
+initializeFiles();
 
 // Utility to read JSON file
 function readJSON(file) {
@@ -298,7 +302,7 @@ app.get('/applications', (req, res) => {
   }
 });
 
-// PUT - Update application (send invitation) - WITH DETAILED DEBUGGING
+// PUT - Update application (send invitation)
 app.put('/applications/:applicationId/invite', (req, res) => {
   try {
     const applicationId = parseInt(req.params.applicationId);
@@ -320,7 +324,6 @@ app.put('/applications/:applicationId/invite', (req, res) => {
     console.log(`📧 Application email: ${application.email}`);
     console.log(`👤 Application name: ${application.name}`);
     
-    // Find the job details
     const job = jobs.find(j => j.id === application.jobId);
     if (!job) {
       console.log('❌ Job not found');
@@ -328,7 +331,6 @@ app.put('/applications/:applicationId/invite', (req, res) => {
     }
     console.log(`💼 Job: ${job.title} at ${job.company}`);
     
-    // Find the user by email - CASE INSENSITIVE SEARCH
     console.log(`\n🔍 Searching for user with email: ${application.email}`);
     console.log(`Total users in database: ${users.length}`);
     users.forEach((u, index) => {
@@ -340,9 +342,7 @@ app.put('/applications/:applicationId/invite', (req, res) => {
     if (!user) {
       console.log(`❌ No user found with email: ${application.email}`);
       console.log(`⚠️  WARNING: Cannot send notification - user account not found!`);
-      console.log(`   Please ensure the applicant has registered with email: ${application.email}`);
       
-      // Still mark invitation as sent even if user not found
       application.inviteSent = true;
       application.inviteSentDate = new Date().toISOString();
       writeJSON(APPLICATIONS_FILE, applications);
@@ -356,7 +356,6 @@ app.put('/applications/:applicationId/invite', (req, res) => {
     
     console.log(`✅ User found: ${user.name} (ID: ${user.id}, Role: ${user.role})`);
     
-    // Create notification for the applicant
     const notification = {
       id: Date.now() + Math.random(),
       userId: user.id,
@@ -376,11 +375,7 @@ app.put('/applications/:applicationId/invite', (req, res) => {
     writeJSON(NOTIFICATIONS_FILE, notifications);
     
     console.log(`🔔 Notification created successfully!`);
-    console.log(`   Notification ID: ${notification.id}`);
-    console.log(`   For User ID: ${user.id}`);
-    console.log(`   Total notifications: ${notifications.length}`);
     
-    // Mark invitation as sent
     application.inviteSent = true;
     application.inviteSentDate = new Date().toISOString();
     writeJSON(APPLICATIONS_FILE, applications);
@@ -488,6 +483,14 @@ app.delete('/notifications/:userId', (req, res) => {
     res.status(500).json({ success: false, message: 'Error clearing notifications' });
   }
 });
+
+// For local development
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+}
 
 // Export for Vercel (serverless)
 module.exports = app;
