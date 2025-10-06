@@ -40,6 +40,23 @@ function initializeFiles() {
 
 initializeFiles();
 
+// Root route - API info
+app.get('/', (req, res) => {
+  res.json({
+    message: '🚀 Job Portal API is running!',
+    version: '1.0.0',
+    endpoints: {
+      users: '/users',
+      login: '/login',
+      jobs: '/jobs',
+      jobSearch: '/jobs/search',
+      applications: '/applications',
+      notifications: '/notifications/:userId'
+    },
+    status: 'active'
+  });
+});
+
 // Utility to read JSON file
 function readJSON(file) {
   try {
