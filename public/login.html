@@ -231,6 +231,9 @@
     </div>
 
     <script>
+        // IMPORTANT: Replace with your actual Vercel URL
+        const API_URL = 'https://hustlehub-jobportal.vercel.app';
+        
         let sessionUser = null;
 
         const loginTab = document.getElementById('loginTab');
@@ -286,7 +289,7 @@
             }
 
             try {
-                const res = await fetch('http://localhost:3000/users', {
+                const res = await fetch(`${API_URL}/users`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -311,7 +314,7 @@
                 }
             } catch (err) {
                 signupMsg.style.color = "red";
-                signupMsg.textContent = "Error: Cannot connect to server. Make sure backend is running on port 3000.";
+                signupMsg.textContent = "Error: Cannot connect to server.";
                 console.error(err);
             } finally {
                 submitBtn.disabled = false;
@@ -329,7 +332,7 @@
             const password = document.getElementById("password").value.trim();
 
             try {
-                const res = await fetch('http://localhost:3000/login', {
+                const res = await fetch(`${API_URL}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -355,7 +358,7 @@
                 }
             } catch (err) {
                 errorMsg.style.color = "red";
-                errorMsg.textContent = "Error: Cannot connect to server. Make sure backend is running on port 3000.";
+                errorMsg.textContent = "Error: Cannot connect to server.";
                 console.error(err);
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Login';

@@ -520,6 +520,9 @@
   </footer>
 
   <script>
+    // IMPORTANT: Replace with your actual Vercel URL
+    const API_URL = 'https://hustlehub-jobportal.vercel.app';
+    
     const jobForm = document.getElementById('job-form');
     const submitBtn = document.getElementById('submit-btn');
     const alertContainer = document.getElementById('alert-container');
@@ -549,19 +552,18 @@
         requirements: document.getElementById('requirements').value.trim()
       };
 
-      // Validation
       if (!jobData.title || !jobData.company || !jobData.location) {
         showAlert('Please fill in all required fields!', 'error');
         return;
       }
 
-      console.log('📤 Sending job data:', jobData);
+      console.log('Sending job data:', jobData);
       
       submitBtn.disabled = true;
       submitBtn.textContent = 'Posting...';
 
       try {
-        const response = await fetch('http://localhost:3000/jobs', {
+        const response = await fetch(`${API_URL}/jobs`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -570,15 +572,14 @@
           body: JSON.stringify(jobData)
         });
 
-        console.log('📡 Response status:', response.status);
+        console.log('Response status:', response.status);
         const data = await response.json();
-        console.log('📡 Response data:', data);
+        console.log('Response data:', data);
 
         if (response.ok && data.success) {
-          showAlert('✅ Job posted successfully! Redirecting to job listings...', 'success');
+          showAlert('Job posted successfully! Redirecting to job listings...', 'success');
           jobForm.reset();
           
-          // Redirect to search jobs page after 2 seconds
           setTimeout(() => {
             window.location.href = 'search-jobs.html';
           }, 2000);
@@ -586,8 +587,8 @@
           throw new Error(data.message || 'Failed to post job');
         }
       } catch (error) {
-        console.error('❌ Error posting job:', error);
-        showAlert('❌ Error posting job: ' + error.message + '. Make sure the server is running on http://localhost:3000', 'error');
+        console.error('Error posting job:', error);
+        showAlert('Error posting job: ' + error.message, 'error');
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Post Job';

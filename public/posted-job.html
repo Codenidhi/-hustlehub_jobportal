@@ -410,11 +410,14 @@
 </footer>
 
 <script>
+  // IMPORTANT: Replace with your actual Vercel URL
+  const API_URL = 'https://hustlehub-jobportal.vercel.app';
+  
   const jobApplicants = {};
 
   async function fetchApplicantsForJob(jobId) {
     try {
-      const response = await fetch(`http://localhost:3000/applications/job/${jobId}`);
+      const response = await fetch(`${API_URL}/applications/job/${jobId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch applications');
       }
@@ -431,7 +434,7 @@
     container.innerHTML = '<p style="text-align: center; color: #999;">Loading jobs...</p>';
     
     try {
-      const response = await fetch('http://localhost:3000/jobs');
+      const response = await fetch(`${API_URL}/jobs`);
       
       if (!response.ok) {
         throw new Error('Server error');
@@ -454,7 +457,6 @@
         return;
       }
       
-      // Fetch real applicants for each job
       for (const job of jobs) {
         jobApplicants[job.id] = await fetchApplicantsForJob(job.id);
       }
@@ -466,7 +468,7 @@
         <div class="no-jobs">
           <i class="fas fa-exclamation-triangle"></i>
           <h2>Unable to Load Jobs</h2>
-          <p>Make sure the server is running on http://localhost:3000</p>
+          <p>Please check your connection and try again.</p>
         </div>
       `;
     }
@@ -564,7 +566,7 @@
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/jobs/${jobId}`, {
+      const response = await fetch(`${API_URL}/jobs/${jobId}`, {
         method: 'DELETE'
       });
       
@@ -588,7 +590,6 @@
   }
 
   function viewProfile(applicationId) {
-    // Find the applicant details
     let applicant = null;
     for (const jobId in jobApplicants) {
       const found = jobApplicants[jobId].find(app => app.id === applicationId);
@@ -618,14 +619,13 @@ ${applicant.message || 'No cover letter provided'}
 
   async function sendInvite(applicationId) {
     try {
-      const response = await fetch(`http://localhost:3000/applications/${applicationId}/invite`, {
+      const response = await fetch(`${API_URL}/applications/${applicationId}/invite`, {
         method: 'PUT'
       });
       
       const data = await response.json();
       
       if (data.success) {
-        // Find the applicant to show their details
         let applicant = null;
         for (const jobId in jobApplicants) {
           const found = jobApplicants[jobId].find(app => app.id === applicationId);
