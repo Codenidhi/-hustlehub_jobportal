@@ -24,5 +24,31 @@
     "type": "Full Time",
     "read": false,
     "createdAt": "2025-10-05T13:42:50.433Z"
+  },
+  {
+    "id": 1759739644152.6665,
+    "userId": 1759683918086,
+    "jobId": 1759739644148,
+    "title": "🎉 New Job Posted!",
+    "message": "full stack development at amazon in bangalore,india",
+    "jobTitle": "full stack development",
+    "company": "amazon",
+    "location": "bangalore,india",
+    "type": "Full Time",
+    "read": false,
+    "createdAt": "2025-10-06T08:34:04.152Z"
+  },
+  {
+    "id": 1759739743929.5876,
+    "userId": 1759683918086,
+    "jobId": 1759739743926,
+    "title": "🎉 New Job Posted!",
+    "message": "full stack development at amazon in bangalore",
+    "jobTitle": "full stack development",
+    "company": "amazon",
+    "location": "bangalore",
+    "type": "Full Time",
+    "read": false,
+    "createdAt": "2025-10-06T08:35:43.929Z"
   }
 ]

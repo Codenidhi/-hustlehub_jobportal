@@ -68,6 +68,7 @@
     .header-icons {
       display: flex;
       gap: 10px;
+      align-items: center;
     }
 
     .icon-button {
@@ -76,6 +77,13 @@
       font-size: 20px;
       color: #fff;
       cursor: pointer;
+    }
+
+    #userWelcome {
+      color: white;
+      font-weight: 700;
+      margin-left: 10px;
+      font-size: 14px;
     }
 
     main {
@@ -279,28 +287,6 @@
       line-height: 1.6;
       color: #666;
       font-size: 14px;
-    }
-
-    .post-job-link {
-      margin-bottom: 24px;
-      text-align: right;
-    }
-
-    .post-job-link a {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
-      background: #000;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: background 0.3s;
-    }
-
-    .post-job-link a:hover {
-      background: #333;
     }
 
     .back-to-home {
@@ -540,12 +526,13 @@
     <a href="index.html" class="logo">HUSTLE HUB</a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="post-job.html">Post Job</a></li>
       <li><a href="#">Contact</a></li>
     </ul>
     <div class="header-icons">
       <button class="icon-button"><i class="fas fa-bell"></i></button>
       <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+      <button class="icon-button" id="logoutBtn" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+      <div id="userWelcome"></div>
     </div>
   </div>
 </header>
@@ -653,9 +640,32 @@
 </footer>
 
 <script>
-  // IMPORTANT: Replace with your actual Vercel URL
-  const API_URL = 'https://hustlehub-jobportal.vercel.app';
-  
+  const API_URL = 'http://localhost:3000';
+  let currentUser = null;
+  const urlParams = new URLSearchParams(window.location.search);
+  const userParam = urlParams.get('user');
+
+  if (!userParam) {
+    alert("Please log in first!");
+    window.location.href = "login.html";
+  } else {
+    try {
+      currentUser = JSON.parse(decodeURIComponent(userParam));
+      
+      const welcomeDiv = document.getElementById("userWelcome");
+      welcomeDiv.textContent = `${currentUser.name}`;
+    } catch (e) {
+      alert("Invalid session. Please log in again.");
+      window.location.href = "login.html";
+    }
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', function() {
+    if (confirm("Are you sure you want to logout?")) {
+      window.location.href = "login.html";
+    }
+  });
+
   const jobList = document.getElementById('job-list');
   const searchForm = document.getElementById('search-form');
   const modal = document.getElementById('application-modal');
@@ -682,7 +692,7 @@
         <p class="no-jobs">
           Unable to load jobs. Please try again later.
           <br><br>
-          <a href="post-job.html" style="color: #007bff; text-decoration: underline;">Post your first job</a>
+          ${currentUser && currentUser.role === 'recruiter' ? '<a href="post-job.html" style="color: #007bff; text-decoration: underline;">Post your first job</a>' : ''}
         </p>
       `;
     }
@@ -696,7 +706,7 @@
         <p class="no-jobs">
           No jobs found.
           <br><br>
-          <a href="post-job.html" style="color: #007bff; text-decoration: underline;">Be the first to post a job!</a>
+          ${currentUser && currentUser.role === 'recruiter' ? '<a href="post-job.html" style="color: #007bff; text-decoration: underline;">Be the first to post a job!</a>' : 'Check back later for new opportunities!'}
         </p>
       `;
       return;

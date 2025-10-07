@@ -16,11 +16,12 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// File paths - Vercel uses /tmp for writable storage
-const USERS_FILE = path.join('/tmp', 'users.json');
-const JOBS_FILE = path.join('/tmp', 'jobs.json');
-const NOTIFICATIONS_FILE = path.join('/tmp', 'notifications.json');
-const APPLICATIONS_FILE = path.join('/tmp', 'applications.json');
+// File paths - use current directory for local, /tmp for Vercel
+const DATA_DIR = process.env.VERCEL ? '/tmp' : __dirname;
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
+const JOBS_FILE = path.join(DATA_DIR, 'jobs.json');
+const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'notifications.json');
+const APPLICATIONS_FILE = path.join(DATA_DIR, 'applications.json');
 
 // Initialize files if they don't exist
 function initializeFiles() {
@@ -502,12 +503,11 @@ app.delete('/notifications/:userId', (req, res) => {
 });
 
 // For local development
-if (require.main === module) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-  });
-}
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📁 Data files location: ${DATA_DIR}`);
+});
 
 // Export for Vercel (serverless)
 module.exports = app;

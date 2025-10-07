@@ -231,8 +231,8 @@
     </div>
 
     <script>
-        // IMPORTANT: Replace with your actual Vercel URL
-        const API_URL = 'https://hustlehub-jobportal.vercel.app';
+        // For local development
+        const API_URL = 'http://localhost:3000';
         
         let sessionUser = null;
 
@@ -292,7 +292,6 @@
                 const res = await fetch(`${API_URL}/users`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
                     body: JSON.stringify({ name, email, password, role })
                 });
                 const data = await res.json();
@@ -335,7 +334,6 @@
                 const res = await fetch(`${API_URL}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
                     body: JSON.stringify({ email, password })
                 });
                 const data = await res.json();

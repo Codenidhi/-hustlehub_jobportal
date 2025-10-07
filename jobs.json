@@ -20,5 +20,27 @@
     "description": "basic of html css and js",
     "requirements": "3 to  5 years",
     "postedDate": "2025-10-05T13:42:50.429Z"
+  },
+  {
+    "id": 1759739644148,
+    "title": "full stack development",
+    "company": "amazon",
+    "location": "bangalore,india",
+    "type": "Full Time",
+    "salary": "50000-60000",
+    "description": "good in codding",
+    "requirements": "0 to 3 years",
+    "postedDate": "2025-10-06T08:34:04.148Z"
+  },
+  {
+    "id": 1759739743926,
+    "title": "full stack development",
+    "company": "amazon",
+    "location": "bangalore",
+    "type": "Full Time",
+    "salary": "50000-60000",
+    "description": "good in coding",
+    "requirements": "0 to 3 years",
+    "postedDate": "2025-10-06T08:35:43.926Z"
   }
 ]
