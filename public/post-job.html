@@ -549,10 +549,9 @@
   </footer>
 
   <script>
-    // CHANGE THIS: Use localhost for local, Vercel URL for production
-    const API_URL = 'http://localhost:3000';
-    // const API_URL = 'https://hustlehub-jobportal.vercel.app';
-    
+  const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3000'
+  : 'https://hustlehub-jobportal-q2r2hdsoa-codenidhis-projects.vercel.app';
     let currentUser = null;
     const urlParams = new URLSearchParams(window.location.search);
     const userParam = urlParams.get('user');

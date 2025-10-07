@@ -231,9 +231,9 @@
     </div>
 
     <script>
-        // For local development
-        const API_URL = 'http://localhost:3000';
-        
+     const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3000'
+  : 'https://hustlehub-jobportal-q2r2hdsoa-codenidhis-projects.vercel.app';
         let sessionUser = null;
 
         const loginTab = document.getElementById('loginTab');
