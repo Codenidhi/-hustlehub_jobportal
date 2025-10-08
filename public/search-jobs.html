@@ -640,9 +640,8 @@
 </footer>
 
 <script>
-const API_URL = window.location.hostname === 'localhost' 
-  ? 'http://localhost:3000'
-  : 'https://hustlehub-jobportal-q2r2hdsoa-codenidhis-projects.vercel.app';
+const API_URL = 'http://localhost:3000';
+
   let currentUser = null;
   const urlParams = new URLSearchParams(window.location.search);
   const userParam = urlParams.get('user');
